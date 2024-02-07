@@ -3,7 +3,7 @@
 #include "decompress.h"
 #include "stdafx.h"
 
-struct LeviathanLzTable {
+typedef struct {
   int *offs_stream;
   int offs_stream_size;
   int *len_stream;
@@ -15,7 +15,7 @@ struct LeviathanLzTable {
   uint8_t *multi_cmd_end[8];
   uint8_t *cmd_stream;
   int cmd_stream_size;
-};
+} LeviathanLzTable;
 
 struct LeviathanModeRaw {
   const uint8_t *lit_stream;

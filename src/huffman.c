@@ -143,7 +143,7 @@ int Huff_ReadCodeLengthsNew(BitReader *bits, uint8_t *syms,
   bits->bitpos += br2.bitpos;
 
   if (1) {
-    uint running_sum = 0x1e;
+    uint32_t running_sum = 0x1e;
     int maxlen = 11;
     for (int i = 0; i < num_symbols; i++) {
       int v = code_len[i];
@@ -163,7 +163,7 @@ int Huff_ReadCodeLengthsNew(BitReader *bits, uint8_t *syms,
     __m128i avg = _mm_set1_epi8(0x1e);
     __m128i ones = _mm_set1_epi8(1);
     __m128i max_codeword_len = _mm_set1_epi8(10);
-    for (uint i = 0; i < num_symbols; i += 16) {
+    for (uint32_t i = 0; i < num_symbols; i += 16) {
       __m128i v = _mm_loadu_si128((__m128i *)&code_len[i]), t;
       // avg[0..15] = avg[15]
       avg = _mm_unpackhi_epi8(avg, avg);

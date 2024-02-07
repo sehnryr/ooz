@@ -21,8 +21,6 @@
                    _mm_add_epi8(_mm_loadl_epi64((__m128i *)(s)),               \
                                 _mm_loadl_epi64((__m128i *)(t))))
 
-// #define finline __forceinline
-
 static const uint32_t kRiceCodeBits2Value[256] = {
     0x80000000, 0x00000007, 0x10000006, 0x00000006, 0x20000005, 0x00000105,
     0x10000005, 0x00000005, 0x30000004, 0x00000204, 0x10000104, 0x00000104,
@@ -142,10 +140,8 @@ uint32_t BSF(uint32_t x);
 int CountLeadingZeros(uint32_t bits);
 int Log2RoundUp(uint32_t v);
 
-template <typename T> void SimpleSort(T *p, T *pend);
-
 bool DecodeGolombRiceLengths(uint8_t *dst, size_t size, BitReader2 *br);
-bool DecodeGolombRiceBits(uint8_t *dst, uint size, uint bitcount,
+bool DecodeGolombRiceBits(uint8_t *dst, uint32_t size, uint32_t bitcount,
                           BitReader2 *br);
 
 void FillByteOverflow16(uint8_t *dst, uint8_t v, size_t n);
@@ -156,8 +152,6 @@ void CombineScaledOffsetArrays(int *offs_stream, size_t offs_stream_size,
 OozDecoder *Ooz_Create();
 void Ooz_Destroy(OozDecoder *decoder);
 const uint8_t *Ooz_ParseHeader(OozHeader *hdr, const uint8_t *p);
-const uint8_t *Ooz_ParseQuantumHeader(OozQuantumHeader *hdr, const uint8_t *p,
-                                      bool use_checksum);
 int Ooz_Decodebytes(uint8_t **output, const uint8_t *src,
                     const uint8_t *src_end, int *decoded_size,
                     size_t output_size, bool force_memmove, uint8_t *scratch,

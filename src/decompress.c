@@ -1,7 +1,7 @@
 #include "decompress.h"
 #include "bitknit.h"
 #include "kraken.h"
-#include "leviathan.h"
+#include "leviathan.hpp"
 #include "lzna.h"
 #include "mermaid.h"
 #include "tans.h"
@@ -134,7 +134,7 @@ bool DecodeGolombRiceLengths(uint8_t *dst, size_t size, BitReader2 *br) {
   return true;
 }
 
-bool DecodeGolombRiceBits(uint8_t *dst, uint size, uint bitcount,
+bool DecodeGolombRiceBits(uint8_t *dst, uint32_t size, uint32_t bitcount,
                           BitReader2 *br) {
   if (bitcount == 0)
     return true;
@@ -142,8 +142,8 @@ bool DecodeGolombRiceBits(uint8_t *dst, uint size, uint bitcount,
   const uint8_t *p = br->p;
   int bitpos = br->bitpos;
 
-  uint bits_required = bitpos + bitcount * size;
-  uint bytes_required = (bits_required + 7) >> 3;
+  uint32_t bits_required = bitpos + bitcount * size;
+  uint32_t bytes_required = (bits_required + 7) >> 3;
   if (bytes_required > br->p_end - p)
     return false;
 
@@ -203,17 +203,6 @@ bool DecodeGolombRiceBits(uint8_t *dst, uint size, uint bitcount,
 // May overflow 16 bytes past the end
 void FillByteOverflow16(uint8_t *dst, uint8_t v, size_t n) {
   memset(dst, v, n);
-}
-
-template <typename T> void SimpleSort(T *p, T *pend) {
-  if (p != pend) {
-    for (T *lp = p + 1, *rp; lp != pend; lp++) {
-      T t = lp[0];
-      for (rp = lp; rp > p && t < rp[-1]; rp--)
-        rp[0] = rp[-1];
-      rp[0] = t;
-    }
-  }
 }
 
 void CombineScaledOffsetArrays(int *offs_stream, size_t offs_stream_size,

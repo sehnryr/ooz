@@ -1,4 +1,4 @@
-#include "leviathan.h"
+#include "leviathan.hpp"
 
 bool Leviathan_ReadLzTable(int chunk_type, const uint8_t *src,
                            const uint8_t *src_end, uint8_t *dst, int dst_size,

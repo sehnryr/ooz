@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-typedef struct BitReader {
+typedef struct {
   // |p| holds the current byte and |p_end| the end of the buffer.
   const uint8_t *p, *p_end;
   // Bits accumulated so far
@@ -11,10 +11,10 @@ typedef struct BitReader {
   int bitpos;
 } BitReader;
 
-struct BitReader2 {
+typedef struct {
   const uint8_t *p, *p_end;
   uint32_t bitpos;
-};
+} BitReader2;
 
 void BitReader_Refill(BitReader *bits);
 void BitReader_RefillBackwards(BitReader *bits);

@@ -2,6 +2,17 @@
 #include "decompress.h"
 #include "huffman.h"
 
+void SimpleSort(uint8_t *p, uint8_t *pend) {
+  if (p != pend) {
+    for (uint8_t *lp = p + 1, *rp; lp != pend; lp++) {
+      uint8_t t = lp[0];
+      for (rp = lp; rp > p && t < rp[-1]; rp--)
+        rp[0] = rp[-1];
+      rp[0] = t;
+    }
+  }
+}
+
 bool Tans_DecodeTable(BitReader *bits, int L_bits, TansData *tans_data) {
   BitReader_Refill(bits);
   if (BitReader_ReadBitNoRefill(bits)) {
@@ -15,7 +26,7 @@ bool Tans_DecodeTable(BitReader *bits, int L_bits, TansData *tans_data) {
     BitReader2 br2;
 
     // another bit reader...
-    br2.p = bits->p - ((uint)(24 - bits->bitpos + 7) >> 3);
+    br2.p = bits->p - ((uint32_t)(24 - bits->bitpos + 7) >> 3);
     br2.p_end = bits->p_end;
     br2.bitpos = (bits->bitpos - 24) & 7;
 
@@ -149,11 +160,11 @@ void Tans_InitLut(TansData *tans_data, int L_bits, TansLutEnt *lut) {
   int L = 1 << L_bits;
   int a_used = tans_data->A_used;
 
-  uint slots_left_to_alloc = L - a_used;
+  uint32_t slots_left_to_alloc = L - a_used;
 
-  uint sa = slots_left_to_alloc >> 2;
+  uint32_t sa = slots_left_to_alloc >> 2;
   pointers[0] = lut;
-  uint sb = sa + ((slots_left_to_alloc & 3) > 0);
+  uint32_t sb = sa + ((slots_left_to_alloc & 3) > 0);
   pointers[1] = lut + sb;
   sb += sa + ((slots_left_to_alloc & 3) > 1);
   pointers[2] = lut + sb;
