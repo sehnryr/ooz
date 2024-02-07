@@ -43,9 +43,6 @@ void BitknitLiteral_Adaptive(BitknitLiteral *model, uint32_t sym);
 void BitknitDistanceLsb_Adaptive(BitknitDistanceLsb *model, uint32_t sym);
 void BitknitDistanceBits_Adaptive(BitknitDistanceBits *model, uint32_t sym);
 
-static void BitknitCopyLongDist(uint8_t *dst, size_t dist, size_t length);
-static void BitknitCopyShortDist(uint8_t *dst, size_t dist, size_t length);
-
 uint32_t BitknitLiteral_Lookup(BitknitLiteral *model, uint32_t *bits);
 uint32_t BitknitDistanceLsb_Lookup(BitknitDistanceLsb *model, uint32_t *bits);
 uint32_t BitknitDistanceBits_Lookup(BitknitDistanceBits *model, uint32_t *bits);
