@@ -531,3 +531,61 @@ int LZNA_DecodeQuantum(uint8_t *dst, uint8_t *dst_end, uint8_t *dst_start,
 
   return (uint8_t *)tab.src - src_in;
 }
+
+const uint8_t *LZNA_ParseWholeMatchInfo(const uint8_t *p, uint32_t *dist) {
+  uint32_t v = byteswap_ushort(*(uint16_t *)p);
+
+  if (v < 0x8000) {
+    uint32_t x = 0, b, pos = 0;
+    for (;;) {
+      b = p[2];
+      p += 1;
+      if (b & 0x80)
+        break;
+      x += (b + 0x80) << pos;
+      pos += 7;
+    }
+    x += (b - 128) << pos;
+    *dist = 0x8000 + v + (x << 15) + 1;
+    return p + 2;
+  } else {
+    *dist = v - 0x8000 + 1;
+    return p + 2;
+  }
+}
+
+const uint8_t *LZNA_ParseQuantumHeader(OozQuantumHeader *hdr, const uint8_t *p,
+                                       bool use_checksum, int raw_len) {
+  uint32_t v = (p[0] << 8) | p[1];
+  uint32_t size = v & 0x3FFF;
+  if (size != 0x3fff) {
+    hdr->compressed_size = size + 1;
+    hdr->flag1 = (v >> 14) & 1;
+    hdr->flag2 = (v >> 15) & 1;
+    if (use_checksum) {
+      hdr->checksum = (p[2] << 16) | (p[3] << 8) | p[4];
+      return p + 5;
+    } else {
+      return p + 2;
+    }
+  }
+  v >>= 14;
+  if (v == 0) {
+    p = LZNA_ParseWholeMatchInfo(p + 2, &hdr->whole_match_distance);
+    hdr->compressed_size = 0;
+    return p;
+  }
+  if (v == 1) {
+    // memset
+    hdr->checksum = p[2];
+    hdr->compressed_size = 0;
+    hdr->whole_match_distance = 0;
+    return p + 3;
+  }
+  if (v == 2) {
+    // uncompressed
+    hdr->compressed_size = raw_len;
+    return p + 2;
+  }
+  return NULL;
+}

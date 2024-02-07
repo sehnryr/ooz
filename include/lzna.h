@@ -1,5 +1,6 @@
 #pragma once
 
+#include "decompress.h"
 #include "stdafx.h"
 
 typedef uint16_t LznaBitModel;
@@ -90,3 +91,7 @@ void LZNA_InitLookup(LznaState *lut);
 int LZNA_DecodeQuantum(uint8_t *dst, uint8_t *dst_end, uint8_t *dst_start,
                        const uint8_t *src_in, const uint8_t *src_end,
                        LznaState *lut);
+
+const uint8_t *LZNA_ParseWholeMatchInfo(const uint8_t *p, uint32_t *dist);
+const uint8_t *LZNA_ParseQuantumHeader(OozQuantumHeader *hdr, const uint8_t *p,
+                                       bool use_checksum, int raw_len);
