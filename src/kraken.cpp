@@ -170,9 +170,6 @@ typedef struct HuffReader {
   uint32_t src_bits, src_mid_bits, src_end_bits;
 } HuffReader;
 
-inline size_t Max(size_t a, size_t b) { return a > b ? a : b; }
-inline size_t Min(size_t a, size_t b) { return a < b ? a : b; }
-
 #define ALIGN_POINTER(p, align)                                                \
   ((uint8_t *)(((uintptr_t)(p) + (align - 1)) & ~(align - 1)))
 
@@ -2435,7 +2432,7 @@ bool Kraken_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
   // Decode lit stream, bounded by dst_size
   out = scratch;
   n = Kraken_Decodebytes(&out, src, src_end, &decode_count,
-                         Min(scratch_end - scratch, dst_size), force_copy,
+                         MIN(scratch_end - scratch, dst_size), force_copy,
                          scratch, scratch_end);
   if (n < 0)
     return false;
@@ -2447,7 +2444,7 @@ bool Kraken_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
   // Decode command stream, bounded by dst_size
   out = scratch;
   n = Kraken_Decodebytes(&out, src, src_end, &decode_count,
-                         Min(scratch_end - scratch, dst_size), force_copy,
+                         MIN(scratch_end - scratch, dst_size), force_copy,
                          scratch, scratch_end);
   if (n < 0)
     return false;
@@ -2471,7 +2468,7 @@ bool Kraken_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
     packed_offs_stream = scratch;
     n = Kraken_Decodebytes(&packed_offs_stream, src, src_end,
                            &lztable->offs_stream_size,
-                           Min(scratch_end - scratch, lztable->cmd_stream_size),
+                           MIN(scratch_end - scratch, lztable->cmd_stream_size),
                            false, scratch, scratch_end);
     if (n < 0)
       return false;
@@ -2482,7 +2479,7 @@ bool Kraken_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
       packed_offs_stream_extra = scratch;
       n = Kraken_Decodebytes(
           &packed_offs_stream_extra, src, src_end, &decode_count,
-          Min(scratch_end - scratch, lztable->offs_stream_size), false, scratch,
+          MIN(scratch_end - scratch, lztable->offs_stream_size), false, scratch,
           scratch_end);
       if (n < 0 || decode_count != lztable->offs_stream_size)
         return false;
@@ -2494,7 +2491,7 @@ bool Kraken_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
     packed_offs_stream = scratch;
     n = Kraken_Decodebytes(&packed_offs_stream, src, src_end,
                            &lztable->offs_stream_size,
-                           Min(scratch_end - scratch, lztable->cmd_stream_size),
+                           MIN(scratch_end - scratch, lztable->cmd_stream_size),
                            false, scratch, scratch_end);
     if (n < 0)
       return false;
@@ -2506,7 +2503,7 @@ bool Kraken_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
   packed_len_stream = scratch;
   n = Kraken_Decodebytes(
       &packed_len_stream, src, src_end, &lztable->len_stream_size,
-      Min(scratch_end - scratch, dst_size >> 2), false, scratch, scratch_end);
+      MIN(scratch_end - scratch, dst_size >> 2), false, scratch, scratch_end);
   if (n < 0)
     return false;
   src += n;
@@ -2801,7 +2798,7 @@ int Kraken_DecodeQuantum(uint8_t *dst, uint8_t *dst_end, uint8_t *dst_start,
       if (src_end - src < src_used)
         return -1;
       if (src_used < dst_count) {
-        size_t scratch_usage = Min(Min(3 * dst_count + 32 + 0xd000, 0x6C000),
+        size_t scratch_usage = MIN(MIN(3 * dst_count + 32 + 0xd000, 0x6C000),
                                    scratch_end - scratch);
         if (scratch_usage < sizeof(KrakenLzTable))
           return -1;
@@ -2868,7 +2865,7 @@ bool Leviathan_ReadLzTable(int chunk_type, const uint8_t *src,
     packed_offs_stream = scratch;
     n = Kraken_Decodebytes(&packed_offs_stream, src, src_end,
                            &lztable->offs_stream_size,
-                           Min(scratch_end - scratch, offs_stream_limit), false,
+                           MIN(scratch_end - scratch, offs_stream_limit), false,
                            scratch, scratch_end);
     if (n < 0)
       return false;
@@ -2883,7 +2880,7 @@ bool Leviathan_ReadLzTable(int chunk_type, const uint8_t *src,
     packed_offs_stream = scratch;
     n = Kraken_Decodebytes(&packed_offs_stream, src, src_end,
                            &lztable->offs_stream_size,
-                           Min(scratch_end - scratch, offs_stream_limit), false,
+                           MIN(scratch_end - scratch, offs_stream_limit), false,
                            scratch, scratch_end);
     if (n < 0)
       return false;
@@ -2894,7 +2891,7 @@ bool Leviathan_ReadLzTable(int chunk_type, const uint8_t *src,
       packed_offs_stream_extra = scratch;
       n = Kraken_Decodebytes(&packed_offs_stream_extra, src, src_end,
                              &decode_count,
-                             Min(scratch_end - scratch, offs_stream_limit),
+                             MIN(scratch_end - scratch, offs_stream_limit),
                              false, scratch, scratch_end);
       if (n < 0 || decode_count != lztable->offs_stream_size)
         return false;
@@ -2907,7 +2904,7 @@ bool Leviathan_ReadLzTable(int chunk_type, const uint8_t *src,
   packed_len_stream = scratch;
   n = Kraken_Decodebytes(
       &packed_len_stream, src, src_end, &lztable->len_stream_size,
-      Min(scratch_end - scratch, dst_size / 5), false, scratch, scratch_end);
+      MIN(scratch_end - scratch, dst_size / 5), false, scratch, scratch_end);
   if (n < 0)
     return false;
   src += n;
@@ -2930,7 +2927,7 @@ bool Leviathan_ReadLzTable(int chunk_type, const uint8_t *src,
     // Decode lit stream, bounded by dst_size
     out = scratch;
     n = Kraken_Decodebytes(&out, src, src_end, &decode_count,
-                           Min(scratch_end - scratch, dst_size), true, scratch,
+                           MIN(scratch_end - scratch, dst_size), true, scratch,
                            scratch_end);
     if (n < 0)
       return false;
@@ -2957,7 +2954,7 @@ bool Leviathan_ReadLzTable(int chunk_type, const uint8_t *src,
     // Decode command stream, bounded by dst_size
     out = scratch;
     n = Kraken_Decodebytes(&out, src, src_end, &decode_count,
-                           Min(scratch_end - scratch, dst_size), true, scratch,
+                           MIN(scratch_end - scratch, dst_size), true, scratch,
                            scratch_end);
     if (n < 0)
       return false;
@@ -3498,7 +3495,7 @@ int Leviathan_DecodeQuantum(uint8_t *dst, uint8_t *dst_end, uint8_t *dst_start,
       if (src_end - src < src_used)
         return -1;
       if (src_used < dst_count) {
-        size_t scratch_usage = Min(Min(3 * dst_count + 32 + 0xd000, 0x6C000),
+        size_t scratch_usage = MIN(MIN(3 * dst_count + 32 + 0xd000, 0x6C000),
                                    scratch_end - scratch);
         if (scratch_usage < sizeof(LeviathanLzTable))
           return -1;
@@ -3589,7 +3586,7 @@ bool Mermaid_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
   // Decode lit stream
   out = scratch;
   n = Kraken_Decodebytes(&out, src, src_end, &decode_count,
-                         Min(scratch_end - scratch, dst_size), false, scratch,
+                         MIN(scratch_end - scratch, dst_size), false, scratch,
                          scratch_end);
   if (n < 0)
     return false;
@@ -3601,7 +3598,7 @@ bool Mermaid_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
   // Decode flag stream
   out = scratch;
   n = Kraken_Decodebytes(&out, src, src_end, &decode_count,
-                         Min(scratch_end - scratch, dst_size), false, scratch,
+                         MIN(scratch_end - scratch, dst_size), false, scratch,
                          scratch_end);
   if (n < 0)
     return false;
@@ -3633,7 +3630,7 @@ bool Mermaid_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
     src += 2;
     off16_hi = scratch;
     n = Kraken_Decodebytes(&off16_hi, src, src_end, &off16_hi_count,
-                           Min(scratch_end - scratch, dst_size >> 1), false,
+                           MIN(scratch_end - scratch, dst_size >> 1), false,
                            scratch, scratch_end);
     if (n < 0)
       return false;
@@ -3642,7 +3639,7 @@ bool Mermaid_ReadLzTable(int mode, const uint8_t *src, const uint8_t *src_end,
 
     off16_lo = scratch;
     n = Kraken_Decodebytes(&off16_lo, src, src_end, &off16_lo_count,
-                           Min(scratch_end - scratch, dst_size >> 1), false,
+                           MIN(scratch_end - scratch, dst_size >> 1), false,
                            scratch, scratch_end);
     if (n < 0)
       return false;
@@ -4187,7 +4184,7 @@ bool Kraken_DecodeStep(struct KrakenDecoder *dec, uint8_t *dst_start,
        dec->hdr.decoder_type == 12);
 
   int dst_bytes_left =
-      (int)Min(is_kraken_decoder ? 0x40000 : 0x4000, dst_bytes_left_in);
+      (int)MIN(is_kraken_decoder ? 0x40000 : 0x4000, dst_bytes_left_in);
 
   if (dec->hdr.uncompressed) {
     if (src_end - src < dst_bytes_left) {
