@@ -1,5 +1,5 @@
 #include "decompress.h"
-#include "bitknit.h"
+#include "bitknit.hpp"
 #include "kraken.h"
 #include "leviathan.hpp"
 #include "lzna.h"

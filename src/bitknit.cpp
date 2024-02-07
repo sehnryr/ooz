@@ -1,4 +1,4 @@
-#include "bitknit.h"
+#include "bitknit.hpp"
 
 void BitknitLiteral_Init(BitknitLiteral *model) {
   size_t i;
